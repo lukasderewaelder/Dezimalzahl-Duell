@@ -20,9 +20,7 @@
             overflow-x: hidden;
         }
 
-        .orbitron {
-            font-family: 'Orbitron', sans-serif;
-        }
+        .orbitron { font-family: 'Orbitron', sans-serif; }
 
         .glass-panel {
             background: rgba(30, 41, 59, 0.7);
@@ -39,15 +37,11 @@
         .operator-btn {
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
         .operator-btn:hover:not(:disabled) {
             transform: scale(1.1);
             box-shadow: 0 0 15px currentColor;
         }
-
-        .operator-btn:active:not(:disabled) {
-            transform: scale(0.95);
-        }
+        .operator-btn:active:not(:disabled) { transform: scale(0.95); }
 
         /* Sort Cards */
         .sort-card {
@@ -60,38 +54,23 @@
             box-shadow: 0 10px 20px -5px rgba(56, 189, 248, 0.4);
             border-color: #38bdf8;
         }
-        .sort-card.selected {
-            opacity: 0;
-            pointer-events: none;
-        }
         
-        .slot-card {
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .slot-card:hover {
-            border-color: #f472b6;
-        }
-
-        /* Animation für richtige Antwort */
+        /* Animations */
         @keyframes successPulse {
             0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); }
             70% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(74, 222, 128, 0); }
             100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
         }
-
         .animate-success {
             animation: successPulse 0.8s ease-out;
             border-color: #4ade80 !important;
             background-color: rgba(74, 222, 128, 0.1);
         }
-
         .animate-error {
             border-color: #f87171 !important;
             background-color: rgba(248, 113, 113, 0.1);
             animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
         }
-
         @keyframes shake {
             10%, 90% { transform: translate3d(-1px, 0, 0); }
             20%, 80% { transform: translate3d(2px, 0, 0); }
@@ -99,200 +78,212 @@
             40%, 60% { transform: translate3d(4px, 0, 0); }
         }
 
-        /* Stellrad Design */
-        .difficulty-selector input[type="radio"], .mode-selector input[type="radio"] {
-            display: none;
+        /* Help Visualization Styles */
+        .help-digit {
+            display: inline-block;
+            width: 40px; /* Noch breiter für horizontale Trennung */
+            margin: 0 4px; /* Expliziter Abstand */
+            text-align: center;
+            font-family: 'Fredoka', monospace;
+            font-weight: bold;
+            font-size: 1.8rem;
+            position: relative;
+            z-index: 10;
+        }
+        .help-ghost {
+            color: #64748b; /* Slate 500 */
+            font-style: italic;
+        }
+        .help-comma {
+            width: 14px;
+            margin: 0;
+        }
+        #helpCanvasContainer {
+            position: relative;
+            height: 350px; /* Viel Platz für die Treppe */
+            width: 100%;
+            margin-top: 20px;
+            overflow-y: visible; /* Erlaubt Überhang falls nötig */
+        }
+        svg.connections {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
         }
 
-        .difficulty-selector label, .mode-selector label {
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
+        /* Selectors */
+        .difficulty-selector input[type="radio"], .mode-selector input[type="radio"] { display: none; }
+        .difficulty-selector label, .mode-selector label { cursor: pointer; transition: all 0.3s ease; }
         .difficulty-selector input:checked + label {
             background: linear-gradient(135deg, #3b82f6, #8b5cf6);
             color: white;
             box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
             transform: translateY(-2px);
         }
-
         .mode-selector input:checked + label {
-            background: #0ea5e9; /* Sky 500 */
-            color: white;
-            box-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
+            background: #0ea5e9; color: white; box-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
         }
-        
-        .mode-selector label:hover {
-            background: rgba(255,255,255,0.1);
-        }
+        .mode-selector label:hover { background: rgba(255,255,255,0.1); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
 
-    <!-- Header Area -->
-    <header class="text-center mb-6">
-        <h1 class="orbitron text-3xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500 mb-2">
+    <!-- Header -->
+    <header class="text-center mb-4">
+        <h1 class="orbitron text-2xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500 mb-2">
             Dezimal Duell
         </h1>
-        <p class="text-slate-400 text-lg">Mission: Geh steil wie eine Rakete, bei Ordnen und Vergleichen von Dezimalzahlen. 🚀</p>
+       <p class="text-slate-400 text-lg">Mission: Geh steil wie eine Rakete, bei Ordnen und Vergleichen von Dezimalzahlen. 🚀</p>
     </header>
 
-    <!-- Main Game Panel -->
-    <main class="glass-panel rounded-3xl p-6 md:p-8 w-full max-w-4xl relative overflow-hidden flex flex-col min-h-[600px]">
+    <!-- Main Panel -->
+    <main class="glass-panel rounded-3xl p-4 md:p-8 w-full max-w-4xl relative overflow-hidden flex flex-col min-h-[600px]">
         
-        <!-- Mode Tabs -->
-        <div class="flex justify-center mb-6 border-b border-slate-700 pb-4">
+        <!-- Tabs -->
+        <div class="flex justify-center mb-4 border-b border-slate-700 pb-4">
             <div class="mode-selector bg-slate-800 p-1 rounded-lg inline-flex gap-1">
                 <input type="radio" name="gamemode" id="modeCompare" value="compare" checked onchange="switchMode('compare')">
-                <label for="modeCompare" class="px-6 py-2 rounded-md text-sm font-bold text-slate-400">
-                    🆚 Modus: Vergleichen
+                <label for="modeCompare" class="px-4 py-2 rounded-md text-xs md:text-sm font-bold text-slate-400">
+                     🆚 Modus: Vergleichen
                 </label>
 
                 <input type="radio" name="gamemode" id="modeSort" value="sort" onchange="switchMode('sort')">
-                <label for="modeSort" class="px-6 py-2 rounded-md text-sm font-bold text-slate-400">
+                <label for="modeSort" class="px-4 py-2 rounded-md text-xs md:text-sm font-bold text-slate-400">
                     🔢 Modus: Ordnen
                 </label>
             </div>
         </div>
 
-        <!-- Difficulty Selector (Shared) -->
-        <div class="flex justify-center mb-8">
-            <div class="difficulty-selector bg-slate-800 p-1.5 rounded-full inline-flex relative shadow-inner flex-wrap justify-center gap-2">
-                
+        <!-- Difficulty -->
+        <div class="flex justify-center mb-6">
+            <div class="difficulty-selector bg-slate-800 p-1 rounded-full inline-flex relative shadow-inner flex-wrap justify-center gap-1">
                 <input type="radio" name="difficulty" id="lvl1" value="1" checked onchange="setDifficulty(1)">
-                <label for="lvl1" class="px-4 py-2 rounded-full text-xs md:text-sm font-bold text-slate-400 hover:text-white">
-                    ⭐ Kadett (Einfach)
-                </label>
+                <label for="lvl1" class="px-3 py-1.5 rounded-full text-xs font-bold text-slate-400 hover:text-white">⭐ Kadett</label>
 
                 <input type="radio" name="difficulty" id="lvl2" value="2" onchange="setDifficulty(2)">
-                <label for="lvl2" class="px-4 py-2 rounded-full text-xs md:text-sm font-bold text-slate-400 hover:text-white">
-                    🚀 Pilot (Mittel)
-                </label>
+                <label for="lvl2" class="px-3 py-1.5 rounded-full text-xs font-bold text-slate-400 hover:text-white">🚀 Pilot</label>
 
                 <input type="radio" name="difficulty" id="lvl3" value="3" onchange="setDifficulty(3)">
-                <label for="lvl3" class="px-4 py-2 rounded-full text-xs md:text-sm font-bold text-slate-400 hover:text-white">
-                    👽 Commander (Anspruchsvoll)
-                </label>
+                <label for="lvl3" class="px-3 py-1.5 rounded-full text-xs font-bold text-slate-400 hover:text-white">👽 Commander</label>
             </div>
         </div>
 
-        <!-- GAME AREA: COMPARE -->
-        <div id="gameAreaCompare" class="flex-grow flex flex-col justify-center">
-            <div class="flex flex-col md:flex-row items-center justify-between gap-8 mb-8">
-                <!-- Number A -->
+        <!-- COMPARE MODE -->
+        <div id="gameAreaCompare" class="flex-grow flex flex-col justify-center relative">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-8 mb-4">
                 <div id="cardA" class="glass-panel w-full md:w-1/3 p-6 rounded-2xl text-center border-slate-700">
                     <div class="text-xs uppercase tracking-widest text-cyan-400 mb-2 font-bold">Zahl A</div>
-                    <div id="numA" class="number-display text-4xl md:text-5xl font-bold text-white tracking-wider">0,00</div>
+                    <div id="numA" class="number-display text-4xl md:text-5xl font-bold text-white tracking-wider truncate">0,00</div>
                 </div>
 
-                <!-- Operator Buttons -->
                 <div class="flex flex-row md:flex-col gap-4 w-full md:w-auto justify-center z-10">
-                    <button onclick="checkCompareAnswer('<')" id="btnLess" class="operator-btn w-16 h-16 rounded-xl bg-slate-800 border-2 border-slate-600 text-3xl font-bold text-white hover:border-cyan-400 hover:text-cyan-400 flex items-center justify-center">&lt;</button>
-                    <button onclick="checkCompareAnswer('=')" id="btnEqual" class="operator-btn w-16 h-16 rounded-xl bg-slate-800 border-2 border-slate-600 text-3xl font-bold text-white hover:border-purple-400 hover:text-purple-400 flex items-center justify-center">=</button>
-                    <button onclick="checkCompareAnswer('>')" id="btnGreater" class="operator-btn w-16 h-16 rounded-xl bg-slate-800 border-2 border-slate-600 text-3xl font-bold text-white hover:border-pink-400 hover:text-pink-400 flex items-center justify-center">&gt;</button>
+                    <button onclick="checkCompareAnswer('<')" id="btnLess" class="operator-btn w-14 h-14 rounded-xl bg-slate-800 border-2 border-slate-600 text-2xl font-bold text-white hover:border-cyan-400 hover:text-cyan-400 flex items-center justify-center">&lt;</button>
+                    <button onclick="checkCompareAnswer('=')" id="btnEqual" class="operator-btn w-14 h-14 rounded-xl bg-slate-800 border-2 border-slate-600 text-2xl font-bold text-white hover:border-purple-400 hover:text-purple-400 flex items-center justify-center">=</button>
+                    <button onclick="checkCompareAnswer('>')" id="btnGreater" class="operator-btn w-14 h-14 rounded-xl bg-slate-800 border-2 border-slate-600 text-2xl font-bold text-white hover:border-pink-400 hover:text-pink-400 flex items-center justify-center">&gt;</button>
                 </div>
 
-                <!-- Number B -->
                 <div id="cardB" class="glass-panel w-full md:w-1/3 p-6 rounded-2xl text-center border-slate-700">
                     <div class="text-xs uppercase tracking-widest text-pink-400 mb-2 font-bold">Zahl B</div>
-                    <div id="numB" class="number-display text-4xl md:text-5xl font-bold text-white tracking-wider">0,00</div>
+                    <div id="numB" class="number-display text-4xl md:text-5xl font-bold text-white tracking-wider truncate">0,00</div>
+                </div>
+            </div>
+
+            <!-- HELP SECTION (Only for Compare Mode) -->
+            <div id="helpSection" class="hidden mt-4 p-4 rounded-xl bg-slate-900 border border-slate-700 animate-[fadeIn_0.5s_ease-out]">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="text-cyan-400 font-bold text-lg flex items-center gap-2">
+                        <span>🛰️</span> Analyse-Scanner
+                    </h3>
+                    <button onclick="toggleHelp()" class="text-slate-500 hover:text-white">✕</button>
+                </div>
+                
+                <!-- Visualization Container -->
+                <div id="helpCanvasContainer" class="bg-slate-800/50 rounded-lg flex justify-between items-start px-2 md:px-8 pt-8 select-none overflow-x-auto">
+                    <!-- Lines will be drawn here by JS -->
+                    <svg id="connectionSvg" class="connections"></svg>
+                    
+                    <div id="helpDigitsA" class="flex z-10"></div>
+                    <div id="helpDigitsB" class="flex z-10"></div>
+                </div>
+
+                <div id="helpText" class="mt-4 text-sm md:text-base text-slate-300 leading-relaxed font-mono bg-black/20 p-3 rounded-lg border-l-4 border-cyan-500">
+                    <!-- Explanation text -->
                 </div>
             </div>
         </div>
 
-        <!-- GAME AREA: SORT -->
+        <!-- SORT MODE -->
         <div id="gameAreaSort" class="hidden flex-grow flex flex-col justify-start">
-            <div id="sortInstruction" class="text-center text-xl md:text-2xl font-bold text-cyan-300 mb-6 bg-slate-800/50 py-2 rounded-lg border border-slate-700">
-                Sortiere: <span id="sortDirectionText" class="text-white">Klein ➔ Groß</span>
+            <div id="sortInstruction" class="text-center text-lg md:text-xl font-bold text-cyan-300 mb-6 bg-slate-800/50 py-2 rounded-lg border border-slate-700">
+                <span id="sortDirectionText" class="text-white">Klein ➔ Groß</span>
             </div>
 
-            <!-- Target Slots (Where numbers go) -->
             <div class="flex justify-between gap-2 md:gap-4 mb-8">
-                <div class="flex flex-col items-center w-1/4">
-                    <span class="text-xs text-slate-500 mb-1 font-bold">1. Start</span>
-                    <div id="slot0" onclick="returnToPool(0)" class="w-full aspect-square md:aspect-[4/3] bg-slate-800/50 border-2 border-dashed border-slate-600 rounded-xl flex items-center justify-center text-slate-600 text-2xl font-bold hover:bg-slate-800 transition-colors"></div>
-                </div>
-                <div class="flex flex-col items-center w-1/4">
-                    <span class="text-xs text-slate-500 mb-1 font-bold">2.</span>
-                    <div id="slot1" onclick="returnToPool(1)" class="w-full aspect-square md:aspect-[4/3] bg-slate-800/50 border-2 border-dashed border-slate-600 rounded-xl flex items-center justify-center text-slate-600 text-2xl font-bold hover:bg-slate-800 transition-colors"></div>
-                </div>
-                <div class="flex flex-col items-center w-1/4">
-                    <span class="text-xs text-slate-500 mb-1 font-bold">3.</span>
-                    <div id="slot2" onclick="returnToPool(2)" class="w-full aspect-square md:aspect-[4/3] bg-slate-800/50 border-2 border-dashed border-slate-600 rounded-xl flex items-center justify-center text-slate-600 text-2xl font-bold hover:bg-slate-800 transition-colors"></div>
-                </div>
-                <div class="flex flex-col items-center w-1/4">
-                    <span class="text-xs text-slate-500 mb-1 font-bold">4. Ziel</span>
-                    <div id="slot3" onclick="returnToPool(3)" class="w-full aspect-square md:aspect-[4/3] bg-slate-800/50 border-2 border-dashed border-slate-600 rounded-xl flex items-center justify-center text-slate-600 text-2xl font-bold hover:bg-slate-800 transition-colors"></div>
-                </div>
+                <!-- Slots 0-3 -->
+                <div class="flex flex-col items-center w-1/4"><span class="text-[10px] text-slate-500 mb-1">1.</span><div id="slot0" onclick="returnToPool(0)" class="w-full aspect-square bg-slate-800/50 border-2 border-dashed border-slate-600 rounded-xl flex items-center justify-center text-slate-600 font-bold hover:bg-slate-800 transition-colors text-sm md:text-xl truncate p-1"></div></div>
+                <div class="flex flex-col items-center w-1/4"><span class="text-[10px] text-slate-500 mb-1">2.</span><div id="slot1" onclick="returnToPool(1)" class="w-full aspect-square bg-slate-800/50 border-2 border-dashed border-slate-600 rounded-xl flex items-center justify-center text-slate-600 font-bold hover:bg-slate-800 transition-colors text-sm md:text-xl truncate p-1"></div></div>
+                <div class="flex flex-col items-center w-1/4"><span class="text-[10px] text-slate-500 mb-1">3.</span><div id="slot2" onclick="returnToPool(2)" class="w-full aspect-square bg-slate-800/50 border-2 border-dashed border-slate-600 rounded-xl flex items-center justify-center text-slate-600 font-bold hover:bg-slate-800 transition-colors text-sm md:text-xl truncate p-1"></div></div>
+                <div class="flex flex-col items-center w-1/4"><span class="text-[10px] text-slate-500 mb-1">4.</span><div id="slot3" onclick="returnToPool(3)" class="w-full aspect-square bg-slate-800/50 border-2 border-dashed border-slate-600 rounded-xl flex items-center justify-center text-slate-600 font-bold hover:bg-slate-800 transition-colors text-sm md:text-xl truncate p-1"></div></div>
             </div>
 
-            <!-- Source Pool (Draggable items basically) -->
-            <div id="sortPool" class="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-slate-900/40 rounded-2xl border border-slate-800">
-                <!-- Generated Buttons will go here -->
-            </div>
-            
-            <div class="text-center mt-4 text-xs text-slate-500">
-                Klicke die Zahlen in der richtigen Reihenfolge an!
-            </div>
+            <div id="sortPool" class="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-slate-900/40 rounded-2xl border border-slate-800 min-h-[100px]"></div>
         </div>
 
-        <!-- Feedback & Shared Controls -->
-        <div class="mt-auto">
-            <div id="feedbackArea" class="h-12 text-center mb-6 font-bold text-xl min-h-[3rem] flex items-center justify-center">
-                <span class="text-slate-500">Wähle die Lösung!</span>
+        <!-- Controls -->
+        <div class="mt-auto pt-4">
+            <div id="feedbackArea" class="h-8 text-center mb-4 font-bold text-lg flex items-center justify-center">
+                <span class="text-slate-500">...</span>
             </div>
 
-            <!-- Action Buttons -->
-            <div class="flex gap-4 justify-center pt-4 border-t border-slate-700">
-                <button onclick="showSolution()" class="px-6 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-bold transition-colors flex items-center gap-2 border border-slate-600">
+            <div class="flex flex-wrap gap-3 justify-center border-t border-slate-700 pt-4">
+                <button onclick="toggleHelp()" id="btnHelp" class="px-5 py-3 rounded-xl bg-purple-700 hover:bg-purple-600 text-white font-bold transition-colors flex items-center gap-2 border border-purple-500">
+                    <span>🏳️‍🌈</span> Hilfe
+                </button>
+                <button onclick="showSolution()" class="px-5 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-bold transition-colors flex items-center gap-2 border border-slate-600">
                     <span>💡</span> Lösung
                 </button>
-                <button onclick="generateTask()" class="px-8 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold shadow-lg shadow-cyan-500/20 transition-all transform hover:-translate-y-1 flex items-center gap-2">
-                    <span>🎲</span> Neue Aufgabe
+                <button onclick="generateTask()" class="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold shadow-lg shadow-cyan-500/20 transition-all transform hover:-translate-y-1 flex items-center gap-2">
+                    <span>🎲</span> Neu
                 </button>
             </div>
         </div>
-
     </main>
-
-    <!-- Decoration -->
-    <div class="fixed top-10 left-10 text-6xl opacity-20 pointer-events-none animate-pulse">🪐</div>
-    <div class="fixed bottom-10 right-10 text-6xl opacity-20 pointer-events-none animate-bounce">🛸</div>
 
     <script>
         // --- GLOBAL STATE ---
-        let currentMode = 'compare'; // 'compare' or 'sort'
+        let currentMode = 'compare';
         let difficulty = 1;
         let isSolved = false;
 
-        // Compare Mode State
+        // Data Containers
         let compA = { val: 0, str: "" };
         let compB = { val: 0, str: "" };
+        let sortNumbers = [];
+        let sortDirection = 'asc';
+        let slotsContent = [null, null, null, null];
 
-        // Sort Mode State
-        let sortNumbers = []; // Array of objects {val, str, id}
-        let sortDirection = 'asc'; // 'asc' or 'desc'
-        let slotsContent = [null, null, null, null]; // Stores the objects currently in slots 0-3
-
-        // --- CORE FUNCTIONS ---
+        // --- CORE UI ---
 
         function switchMode(mode) {
             currentMode = mode;
-            
-            // Toggle UI visibility
             const areaCompare = document.getElementById('gameAreaCompare');
             const areaSort = document.getElementById('gameAreaSort');
+            const btnHelp = document.getElementById('btnHelp');
 
             if (mode === 'compare') {
                 areaCompare.classList.remove('hidden');
                 areaSort.classList.add('hidden');
+                btnHelp.style.display = 'flex'; // Help only for compare
             } else {
                 areaCompare.classList.add('hidden');
                 areaSort.classList.remove('hidden');
-                // Ensure flex display for sort area when visible
-                areaSort.classList.add('flex'); 
+                areaSort.classList.add('flex');
+                btnHelp.style.display = 'none';
             }
-            
             generateTask();
         }
 
@@ -301,312 +292,472 @@
             generateTask();
         }
 
+        function resetUI() {
+            document.getElementById('feedbackArea').innerHTML = '<span class="text-slate-500">Bereit für den Start!</span>';
+            const cards = document.querySelectorAll('.glass-panel');
+            cards.forEach(c => c.classList.remove('animate-success', 'animate-error'));
+            
+            // Compare Reset
+            ['btnLess', 'btnEqual', 'btnGreater'].forEach(id => {
+                const btn = document.getElementById(id);
+                btn.className = "operator-btn w-14 h-14 rounded-xl bg-slate-800 border-2 border-slate-600 text-2xl font-bold text-white hover:border-cyan-400 hover:text-cyan-400 flex items-center justify-center";
+            });
+            document.getElementById('helpSection').classList.add('hidden');
+
+            // Sort Reset
+            [0,1,2,3].forEach(i => {
+                const el = document.getElementById(`slot${i}`);
+                el.innerHTML = '';
+                el.classList.remove('border-green-500', 'bg-green-500/20', 'border-red-500', 'bg-red-500/20', 'border-solid', 'bg-cyan-900/30', 'border-cyan-400');
+                el.classList.add('border-dashed', 'text-slate-600');
+            });
+            slotsContent = [null, null, null, null];
+        }
+
         function generateTask() {
             isSolved = false;
             resetUI();
-            
-            if (currentMode === 'compare') {
-                generateCompareTask();
-            } else {
-                generateSortTask();
-            }
-        }
-
-        function resetUI() {
-            document.getElementById('feedbackArea').innerHTML = '<span class="text-slate-500">Löse die Mission!</span>';
-            
-            // Reset Compare UI
-            const cards = document.querySelectorAll('.glass-panel');
-            cards.forEach(c => c.classList.remove('animate-success', 'animate-error'));
-            resetBtnStyles();
-
-            // Reset Sort UI
-            const slots = [0,1,2,3];
-            slots.forEach(i => {
-                const el = document.getElementById(`slot${i}`);
-                el.innerHTML = '';
-                el.classList.remove('border-green-500', 'bg-green-500/20', 'border-red-500', 'bg-red-500/20');
-                el.className = "w-full aspect-square md:aspect-[4/3] bg-slate-800/50 border-2 border-dashed border-slate-600 rounded-xl flex items-center justify-center text-slate-600 text-2xl font-bold hover:bg-slate-800 transition-colors cursor-pointer";
-            });
-            slotsContent = [null, null, null, null];
+            if (currentMode === 'compare') generateCompareTask();
+            else generateSortTask();
         }
 
         function getRandomInt(min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
 
-        // --- LOGIC: COMPARE MODE ---
+        // --- COMPARE LOGIC ---
 
         function generateCompareTask() {
-            let maxInt = 10;
-            let maxDec = 2;
-            
-            if (difficulty === 2) { maxInt = 100; maxDec = 3; }
-            if (difficulty === 3) { maxInt = 999; maxDec = 4; }
-
             const isTargetEqual = Math.random() < 0.20;
-
-            // Generate A
-            let valA = parseFloat((Math.random() * maxInt).toFixed(getRandomInt(1, maxDec)));
-            
-            if (isTargetEqual) {
-                compA.val = valA;
-                compB.val = valA;
-                
-                let sA = valA.toString();
-                let sB = valA.toString();
-
-                if (Math.random() > 0.5) sA += "0"; else sB += "00";
-                
-                if (Number.isInteger(valA)) {
-                    sA = valA.toString();
-                    sB = valA.toString() + ".0";
-                } else {
-                     if(!sB.includes('.')) sB += ".";
-                     sB += "0";
-                }
-                
-                compA.str = sA.replace('.', ',');
-                compB.str = sB.replace('.', ',');
-
-            } else {
-                compA.val = valA;
-                
-                let range = difficulty === 1 ? 2 : (difficulty === 2 ? 0.5 : 0.01);
-                let valB = valA + (Math.random() * range * 2 - range);
-                valB = parseFloat(valB.toFixed(getRandomInt(1, maxDec)));
-                
-                if (valB === valA) valB += Math.pow(10, -1 * getRandomInt(1, maxDec));
-                
-                compB.val = valB;
-
-                let sA = valA.toString();
-                let sB = valB.toString();
-                if(Math.random() > 0.7 && difficulty > 1) sA += "0";
-                
-                compA.str = sA.replace('.', ',');
-                compB.str = sB.replace('.', ',');
-            }
+            if (isTargetEqual) generateEqualPair();
+            else generateUnequalPair();
 
             document.getElementById('numA').textContent = compA.str;
             document.getElementById('numB').textContent = compB.str;
         }
 
-        function checkCompareAnswer(operator) {
-            if (isSolved) return;
+        function generateEqualPair() {
+            let intPart = getRandomInt(0, difficulty > 1 ? 99 : 9);
+            let decVal = getRandomInt(1, 9);
+            let val = parseFloat(intPart + "." + decVal);
 
-            let correctOp = '';
-            if (compA.val < compB.val) correctOp = '<';
-            else if (compA.val > compB.val) correctOp = '>';
-            else correctOp = '=';
+            let sA = val.toString();
+            let sB = val.toString();
 
-            const feedback = document.getElementById('feedbackArea');
-            const cardA = document.getElementById('cardA');
-            const cardB = document.getElementById('cardB');
+            // Visuelle Variation (1,2 vs 1,20)
+            if (sB.length < 5) sB += "0";
+            if (Math.random() > 0.5) [sA, sB] = [sB, sA];
 
-            resetBtnStyles();
+            compA.val = val; compB.val = val;
+            compA.str = sA.replace('.', ',').substring(0,6);
+            compB.str = sB.replace('.', ',').substring(0,6);
+            
+            // Format check
+            if(!compA.str.includes(',')) compA.str += ",0";
+            if(!compB.str.includes(',')) compB.str += ",0";
+        }
 
-            if (operator === correctOp) {
-                feedback.innerHTML = `<span class="text-green-400 drop-shadow-lg">Richtig! Klasse gemacht! 🎉</span>`;
-                highlightButton(correctOp, 'bg-green-500', 'border-green-400');
-                cardA.classList.add('animate-success');
-                cardB.classList.add('animate-success');
-                isSolved = true;
+        function generateUnequalPair() {
+            let strategy = "random";
+            const roll = Math.random();
+
+            if (difficulty === 1) strategy = roll > 0.5 ? "diffInt" : "easyDec";
+            else if (difficulty === 2) strategy = roll > 0.3 ? "mediumDec" : "diffInt";
+            else {
+                if (roll < 0.4) strategy = "trickLength";
+                else if (roll < 0.8) strategy = "hardDec";
+                else strategy = "mediumDec";
+            }
+
+            let valA, valB;
+
+            if (strategy === "diffInt") {
+                valA = getRandomInt(0, 99) + getRandomInt(1,9)/10;
+                valB = getRandomInt(0, 99) + getRandomInt(1,9)/10;
+                while(Math.floor(valA) === Math.floor(valB)) valB = getRandomInt(0, 99);
+            } else if (strategy === "easyDec") {
+                let i = getRandomInt(0, 19);
+                valA = i + getRandomInt(1,9)/10;
+                valB = i + getRandomInt(1,9)/10;
+                while(valA === valB) valB = i + getRandomInt(1,9)/10;
+            } else if (strategy === "mediumDec") {
+                let i = getRandomInt(0, 19);
+                valA = i + getRandomInt(10,99)/100;
+                valB = i + getRandomInt(10,99)/100;
+                while(Math.abs(valA - valB) < 0.02) valB += 0.05;
+            } else if (strategy === "hardDec") {
+                let i = getRandomInt(0, 9);
+                let dA = getRandomInt(100, 800);
+                let dB = dA + getRandomInt(1, 20) * (Math.random() > 0.5 ? 1 : -1);
+                valA = i + dA/1000;
+                valB = i + dB/1000;
+            } else if (strategy === "trickLength") {
+                // Short is bigger (0.5 vs 0.499)
+                let i = getRandomInt(0, 9);
+                let base = getRandomInt(2, 8);
+                valA = i + base/10;
+                let suffix = getRandomInt(10, 99);
+                valB = parseFloat(i + "." + (base-1) + suffix);
+                if(Math.random() > 0.5) [valA, valB] = [valB, valA];
             } else {
-                feedback.innerHTML = `<span class="text-red-400 drop-shadow-lg">Nicht ganz... versuch es nochmal! 🤔</span>`;
-                highlightButton(operator, 'bg-red-500', 'border-red-400');
-                cardA.classList.add('animate-error');
-                cardB.classList.add('animate-error');
-                setTimeout(() => {
-                    cardA.classList.remove('animate-error');
-                    cardB.classList.remove('animate-error');
-                }, 500);
+                valA = Math.random() * 10;
+                valB = Math.random() * 10;
+            }
+
+            valA = parseFloat(valA.toFixed(4));
+            valB = parseFloat(valB.toFixed(4));
+            if(valA === valB) valB += 0.01;
+
+            compA.val = valA; compB.val = valB;
+            compA.str = valA.toString().replace('.', ',').substring(0,6);
+            compB.str = valB.toString().replace('.', ',').substring(0,6);
+            
+             // Ensure distinct strings if values are distinct
+            if (compA.str === compB.str) {
+                let last = parseInt(compB.str.slice(-1)) || 1;
+                compB.str = compB.str.slice(0, -1) + ((last + 1) % 10);
+                compB.val = parseFloat(compB.str.replace(',', '.'));
             }
         }
 
-        function resetBtnStyles() {
-            const btns = ['btnLess', 'btnEqual', 'btnGreater'];
-            btns.forEach(id => {
-                const btn = document.getElementById(id);
-                btn.className = "operator-btn w-16 h-16 rounded-xl bg-slate-800 border-2 border-slate-600 text-3xl font-bold text-white hover:border-cyan-400 hover:text-cyan-400 flex items-center justify-center";
+        function checkCompareAnswer(op) {
+            if(isSolved) return;
+            let correct = compA.val < compB.val ? '<' : (compA.val > compB.val ? '>' : '=');
+            
+            resetCompareBtns();
+            const btnId = op === '<' ? 'btnLess' : (op === '=' ? 'btnEqual' : 'btnGreater');
+            const btn = document.getElementById(btnId);
+
+            if(op === correct) {
+                document.getElementById('feedbackArea').innerHTML = `<span class="text-green-400 drop-shadow-lg">Richtig! Klasse! 🎉</span>`;
+                btn.classList.add('bg-green-500', 'border-green-400', 'scale-110');
+                document.getElementById('cardA').classList.add('animate-success');
+                document.getElementById('cardB').classList.add('animate-success');
+                isSolved = true;
+            } else {
+                document.getElementById('feedbackArea').innerHTML = `<span class="text-red-400">Nicht ganz... Tipp: Nutze die Hilfe! 🏳️‍🌈</span>`;
+                btn.classList.add('bg-red-500', 'border-red-400');
+                document.getElementById('cardA').classList.add('animate-error');
+                document.getElementById('cardB').classList.add('animate-error');
+            }
+        }
+
+        function resetCompareBtns() {
+            ['btnLess', 'btnEqual', 'btnGreater'].forEach(id => {
+                document.getElementById(id).classList.remove('bg-green-500', 'border-green-400', 'scale-110', 'bg-red-500', 'border-red-400', 'bg-yellow-500', 'border-yellow-400');
             });
         }
 
-        function highlightButton(op, bgClass, borderClass) {
-            let btnId = '';
-            if (op === '<') btnId = 'btnLess';
-            if (op === '=') btnId = 'btnEqual';
-            if (op === '>') btnId = 'btnGreater';
-            const btn = document.getElementById(btnId);
-            if(btn) {
-                btn.classList.remove('bg-slate-800', 'border-slate-600');
-                btn.classList.add(bgClass, borderClass, 'text-white', 'scale-110');
+        // --- HELP SYSTEM (The new cool part) ---
+
+        function toggleHelp() {
+            const section = document.getElementById('helpSection');
+            if (section.classList.contains('hidden')) {
+                section.classList.remove('hidden');
+                renderHelpVisualization();
+            } else {
+                section.classList.add('hidden');
             }
         }
 
-        // --- LOGIC: SORT MODE ---
+        function renderHelpVisualization() {
+            const containerA = document.getElementById('helpDigitsA');
+            const containerB = document.getElementById('helpDigitsB');
+            const svg = document.getElementById('connectionSvg');
+            const text = document.getElementById('helpText');
 
-        function generateSortTask() {
-            // Determine random direction
-            sortDirection = Math.random() > 0.5 ? 'asc' : 'desc';
-            document.getElementById('sortDirectionText').textContent = 
-                sortDirection === 'asc' ? "Klein ➔ Groß" : "Groß ➔ Klein";
+            // Clear previous
+            containerA.innerHTML = '';
+            containerB.innerHTML = '';
+            svg.innerHTML = '';
 
-            let maxInt = 10;
-            let maxDec = 2;
-            if (difficulty === 2) { maxInt = 50; maxDec = 3; }
-            if (difficulty === 3) { maxInt = 100; maxDec = 4; }
+            // Normalize Strings (Handle "Ghost Zeros")
+            let sA = compA.str;
+            let sB = compB.str;
+            
+            // Split into parts (integer , decimal)
+            let [intA, decA] = sA.split(',');
+            let [intB, decB] = sB.split(',');
+            if(!decA) decA = "";
+            if(!decB) decB = "";
 
-            sortNumbers = [];
-            // Generate 4 distinct numbers
-            while(sortNumbers.length < 4) {
-                let val = parseFloat((Math.random() * maxInt).toFixed(getRandomInt(1, maxDec)));
+            // Pad Integers (Left side)
+            // To ensure alignment, assume small integers for this visualization or pad with ghost zeros if really needed.
+            // But let's keep it simple for now based on app logic (numbers usually similar length).
+            
+            // Pad Decimals (Right side)
+            const maxLen = Math.max(decA.length, decB.length);
+            const rawDecA = decA;
+            const rawDecB = decB;
+            
+            // Build visual elements
+            let elsA = [];
+            let elsB = [];
+
+            // Add Integers
+            for(let char of intA) elsA.push({char, type: 'digit'});
+            elsA.push({char: ',', type: 'comma'});
+            for(let i=0; i<maxLen; i++) {
+                if (i < rawDecA.length) elsA.push({char: rawDecA[i], type: 'digit'});
+                else elsA.push({char: '0', type: 'ghost'});
+            }
+
+            for(let char of intB) elsB.push({char, type: 'digit'});
+            elsB.push({char: ',', type: 'comma'});
+            for(let i=0; i<maxLen; i++) {
+                if (i < rawDecB.length) elsB.push({char: rawDecB[i], type: 'digit'});
+                else elsB.push({char: '0', type: 'ghost'});
+            }
+
+            // Render to DOM to get positions
+            const renderDigit = (item) => {
+                const span = document.createElement('span');
+                span.textContent = item.char;
+                if(item.type === 'comma') span.className = 'help-digit help-comma text-white';
+                else if(item.type === 'ghost') span.className = 'help-digit help-ghost';
+                else span.className = 'help-digit text-cyan-200';
+                return span;
+            };
+
+            elsA.forEach(item => containerA.appendChild(renderDigit(item)));
+            elsB.forEach(item => containerB.appendChild(renderDigit(item)));
+
+            // Force layout update before drawing lines
+            setTimeout(() => {
+                drawHelpLines(containerA, containerB, svg, elsA, elsB, text);
+            }, 50);
+        }
+
+        function drawHelpLines(conA, conB, svg, dataA, dataB, textDisplay) {
+            const spansA = conA.children;
+            const spansB = conB.children;
+            const parentRect = document.getElementById('helpCanvasContainer').getBoundingClientRect();
+
+            let firstDiffIndex = -1;
+            let comparisonResult = '=';
+            let explanation = "";
+            
+            const getPlaceName = (idx, commaIdx) => {
+                if (idx < commaIdx) {
+                    let dist = commaIdx - 1 - idx;
+                    if(dist === 0) return "Einer";
+                    if(dist === 1) return "Zehner";
+                    if(dist === 2) return "Hunderter";
+                    return "Vorkommastelle";
+                } else if (idx > commaIdx) {
+                    let dist = idx - commaIdx;
+                    if(dist === 1) return "Zehntel";
+                    if(dist === 2) return "Hundertstel";
+                    if(dist === 3) return "Tausendstel";
+                    if(dist === 4) return "Zehntausendstel";
+                    return "Nachkommastelle";
+                }
+                return "Komma";
+            };
+
+            const commaIndexA = Array.from(spansA).findIndex(s => s.textContent === ',');
+            const commaIndexB = Array.from(spansB).findIndex(s => s.textContent === ',');
+            
+            let minRel = -Math.max(commaIndexA, commaIndexB);
+            let maxRel = Math.max(spansA.length - 1 - commaIndexA, spansB.length - 1 - commaIndexB);
+
+            let diffFound = false;
+
+            for (let i = minRel; i <= maxRel; i++) {
+                let idxA = commaIndexA + i;
+                let idxB = commaIndexB + i;
+
+                let charA = (idxA >= 0 && idxA < spansA.length) ? spansA[idxA].textContent : '0';
+                let charB = (idxB >= 0 && idxB < spansB.length) ? spansB[idxB].textContent : '0';
                 
-                // Ensure uniqueness
-                if(!sortNumbers.some(n => n.val === val)) {
-                    let s = val.toString();
-                    // Add random trailing zero visually
-                    if (Math.random() > 0.6) s += "0";
+                if ((idxA < 0 || idxA >= spansA.length) && (idxB < 0 || idxB >= spansB.length)) continue;
+                if (i === 0) continue; 
+
+                let rectA = (idxA >= 0 && idxA < spansA.length) ? spansA[idxA].getBoundingClientRect() : null;
+                let rectB = (idxB >= 0 && idxB < spansB.length) ? spansB[idxB].getBoundingClientRect() : null;
+
+                if (!rectA || !rectB) continue; 
+
+                const x1 = rectA.left + rectA.width/2 - parentRect.left;
+                const y1 = rectA.bottom - parentRect.top - 5; 
+                const x2 = rectB.left + rectB.width/2 - parentRect.left;
+                const y2 = rectB.bottom - parentRect.top - 5;
+
+                let valA = parseInt(charA);
+                let valB = parseInt(charB);
+                let status = '=';
+                let color = '#3b82f6'; // Blue default
+                let lineThickness = "2";
+                
+                if (!diffFound) {
+                    if (valA !== valB) {
+                        diffFound = true;
+                        status = valA < valB ? '<' : '>';
+                        color = valA < valB ? '#a855f7' : '#f43f5e'; // Purple or Red
+                        lineThickness = "4";
+
+                        let place = getPlaceName(idxA, commaIndexA);
+                        let reason = valA < valB ? "kleiner" : "größer";
+                        let emptyHint = "";
+                        if (spansA[idxA].classList.contains('help-ghost') || spansB[idxB].classList.contains('help-ghost')) {
+                            emptyHint = " (Leere Stelle = 0)";
+                        }
+                        
+                        explanation = `Wir vergleichen von links nach rechts.<br>Die ${place} unterscheiden sich!<br>
+                        <span class="text-white font-bold">${charA}</span> ist ${reason} als <span class="text-white font-bold">${charB}</span>${emptyHint}.<br>
+                        Deshalb ist die Entscheidung gefallen: <span class="text-yellow-400 font-bold">${status}</span>`;
+                    }
+                } else {
+                    color = '#334155'; // Fade out
+                    lineThickness = "1";
+                }
+
+                // --- STAIRCASE DEPTH LOGIC ---
+                // Jede Stelle bekommt ihre EIGENE Tiefe basierend auf dem Index.
+                // i geht von minRel (negativ) bis maxRel (positiv).
+                // Wir shiften das, damit es bei 0 startet.
+                const uniqueLevel = i - minRel;
+                const depthStep = 40; // Großer Abstand (Pixels)
+                const baseDepth = 30;
+                
+                // Berechnung der Tiefe für diese spezifische Verbindung
+                const currentDepth = Math.max(y1, y2) + baseDepth + (uniqueLevel * depthStep);
+
+                // Eckiger Pfad (Square Bracket)
+                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                const d = `M ${x1} ${y1} L ${x1} ${currentDepth} L ${x2} ${currentDepth} L ${x2} ${y2}`;
+                
+                path.setAttribute("d", d);
+                path.setAttribute("fill", "transparent");
+                path.setAttribute("stroke", color);
+                path.setAttribute("stroke-width", lineThickness); 
+                path.setAttribute("stroke-linejoin", "round"); 
+                if (diffFound && status === '=') path.setAttribute("stroke-dasharray", "4");
+                
+                svg.appendChild(path);
+
+                // --- SYMBOL PLACEMENT ---
+                if (!diffFound || (diffFound && status !== '=')) {
+                    const textEl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    const centerX = (x1 + x2) / 2;
+                    textEl.setAttribute("x", centerX);
+                    textEl.setAttribute("y", currentDepth + 7);
+                    textEl.setAttribute("text-anchor", "middle");
+                    textEl.setAttribute("fill", color);
+                    textEl.setAttribute("font-weight", "bold");
+                    textEl.setAttribute("font-size", "24");
+                    textEl.textContent = status;
                     
-                    sortNumbers.push({
-                        id: sortNumbers.length,
-                        val: val,
-                        str: s.replace('.', ',')
-                    });
+                    textEl.setAttribute("stroke", "#1e293b"); 
+                    textEl.setAttribute("stroke-width", "5");
+                    textEl.setAttribute("paint-order", "stroke");
+                    
+                    svg.appendChild(textEl);
                 }
             }
 
+            if (!diffFound) {
+                explanation = "Alle Stellen sind gleich (oder Nullen aufgefüllt).<br>Die Zahlen sind <span class='text-green-400 font-bold'>gleich groß (=)</span>.";
+            }
+
+            textDisplay.innerHTML = explanation;
+        }
+
+        // --- SORT LOGIC ---
+
+        function generateSortTask() {
+            sortDirection = Math.random() > 0.5 ? 'asc' : 'desc';
+            document.getElementById('sortDirectionText').textContent = sortDirection === 'asc' ? "Klein ➔ Groß" : "Groß ➔ Klein";
+            
+            sortNumbers = [];
+            while(sortNumbers.length < 4) {
+                let v = Math.random() * (difficulty === 1 ? 10 : 100);
+                v = parseFloat(v.toFixed(2));
+                if(!sortNumbers.some(n => n.val === v)) {
+                    sortNumbers.push({ id: sortNumbers.length, val: v, str: v.toString().replace('.', ',') });
+                }
+            }
             renderSortPool();
         }
 
         function renderSortPool() {
             const pool = document.getElementById('sortPool');
             pool.innerHTML = '';
-
-            sortNumbers.forEach(num => {
-                // If number is already in a slot, don't show in pool
-                const isInSlot = slotsContent.some(s => s && s.id === num.id);
-                
-                if (!isInSlot) {
-                    const btn = document.createElement('div');
-                    btn.className = "sort-card bg-slate-700 border border-slate-500 rounded-xl p-3 text-center text-lg md:text-xl font-bold text-white shadow-lg";
-                    btn.textContent = num.str;
-                    btn.onclick = () => moveToSlot(num);
-                    pool.appendChild(btn);
+            sortNumbers.forEach(n => {
+                if(!slotsContent.some(s => s && s.id === n.id)) {
+                    const d = document.createElement('div');
+                    d.className = "sort-card bg-slate-700 border border-slate-500 rounded-xl flex items-center justify-center text-white font-bold text-lg md:text-2xl shadow-lg aspect-square";
+                    d.textContent = n.str;
+                    d.onclick = () => moveToSlot(n);
+                    pool.appendChild(d);
                 }
             });
         }
 
-        function moveToSlot(numObj) {
-            if (isSolved) return;
-
-            // Find first empty slot
-            const emptyIndex = slotsContent.findIndex(x => x === null);
-            if (emptyIndex !== -1) {
-                slotsContent[emptyIndex] = numObj;
-                
-                // Update Slot UI
-                const slotEl = document.getElementById(`slot${emptyIndex}`);
-                slotEl.innerHTML = `<span class="text-xl md:text-2xl font-bold text-white drop-shadow-md slot-card">${numObj.str}</span>`;
-                slotEl.classList.remove('border-dashed', 'text-slate-600');
-                slotEl.classList.add('border-solid', 'border-cyan-400', 'bg-cyan-900/30');
-
+        function moveToSlot(item) {
+            if(isSolved) return;
+            const idx = slotsContent.findIndex(x => x === null);
+            if(idx !== -1) {
+                slotsContent[idx] = item;
+                const el = document.getElementById(`slot${idx}`);
+                el.textContent = item.str;
+                el.classList.remove('border-dashed', 'text-slate-600');
+                el.classList.add('border-solid', 'border-cyan-400', 'bg-cyan-900/30', 'text-white');
                 renderSortPool();
-                checkSortAuto();
+                checkSort();
             }
         }
 
-        function returnToPool(slotIndex) {
-            if (isSolved) return;
-            if (slotsContent[slotIndex] === null) return;
-
-            // Clear slot
-            slotsContent[slotIndex] = null;
-            
-            // Reset Slot UI
-            const slotEl = document.getElementById(`slot${slotIndex}`);
-            slotEl.innerHTML = '';
-            slotEl.className = "w-full aspect-square md:aspect-[4/3] bg-slate-800/50 border-2 border-dashed border-slate-600 rounded-xl flex items-center justify-center text-slate-600 text-2xl font-bold hover:bg-slate-800 transition-colors cursor-pointer";
-
+        function returnToPool(idx) {
+            if(isSolved || !slotsContent[idx]) return;
+            slotsContent[idx] = null;
+            const el = document.getElementById(`slot${idx}`);
+            el.innerHTML = '';
+            el.className = "w-full aspect-square bg-slate-800/50 border-2 border-dashed border-slate-600 rounded-xl flex items-center justify-center text-slate-600 font-bold hover:bg-slate-800 transition-colors text-sm md:text-xl truncate p-1";
             renderSortPool();
-            
-            // Clear feedback if not full
-            document.getElementById('feedbackArea').innerHTML = '<span class="text-slate-500">...</span>';
+            document.getElementById('feedbackArea').innerHTML = '...';
         }
 
-        function checkSortAuto() {
-            // Check if all slots filled
-            if (slotsContent.some(x => x === null)) return;
-
-            // Check order
-            let isCorrect = true;
-            for(let i = 0; i < 3; i++) {
-                const a = slotsContent[i].val;
-                const b = slotsContent[i+1].val;
-                
-                if (sortDirection === 'asc') {
-                    if (a > b) isCorrect = false;
-                } else {
-                    if (a < b) isCorrect = false;
-                }
+        function checkSort() {
+            if(slotsContent.some(x => x === null)) return;
+            let correct = true;
+            for(let i=0; i<3; i++) {
+                if(sortDirection === 'asc') { if(slotsContent[i].val > slotsContent[i+1].val) correct = false; }
+                else { if(slotsContent[i].val < slotsContent[i+1].val) correct = false; }
             }
 
-            const feedback = document.getElementById('feedbackArea');
-            if (isCorrect) {
-                feedback.innerHTML = `<span class="text-green-400 drop-shadow-lg">Perfekte Ordnung! 🚀</span>`;
+            if(correct) {
+                document.getElementById('feedbackArea').innerHTML = `<span class="text-green-400 drop-shadow-lg">Perfekt sortiert! 🚀</span>`;
+                slotsContent.forEach((_,i) => document.getElementById(`slot${i}`).classList.add('border-green-500', 'bg-green-500/20'));
                 isSolved = true;
-                
-                // Greenify slots
-                slotsContent.forEach((_, i) => {
-                    document.getElementById(`slot${i}`).classList.add('border-green-500', 'bg-green-500/20');
-                });
             } else {
-                feedback.innerHTML = `<span class="text-red-400 drop-shadow-lg">Reihenfolge stimmt nicht!</span>`;
-                // Redify slots temporarily
-                slotsContent.forEach((_, i) => {
-                     document.getElementById(`slot${i}`).classList.add('border-red-500');
-                });
-                setTimeout(() => {
-                    slotsContent.forEach((_, i) => {
-                         document.getElementById(`slot${i}`).classList.remove('border-red-500');
-                    });
-                }, 1000);
+                document.getElementById('feedbackArea').innerHTML = `<span class="text-red-400">Reihenfolge stimmt noch nicht.</span>`;
+                slotsContent.forEach((_,i) => document.getElementById(`slot${i}`).classList.add('border-red-500'));
+                setTimeout(() => slotsContent.forEach((_,i) => document.getElementById(`slot${i}`).classList.remove('border-red-500')), 1000);
             }
         }
-
-        // --- SHARED FUNCTIONS ---
 
         function showSolution() {
-            if (currentMode === 'compare') {
-                let correctOp = '';
-                if (compA.val < compB.val) correctOp = '<';
-                else if (compA.val > compB.val) correctOp = '>';
-                else correctOp = '=';
-                resetBtnStyles();
-                highlightButton(correctOp, 'bg-yellow-500', 'border-yellow-400');
-                document.getElementById('feedbackArea').innerHTML = `<span class="text-yellow-400">Hier ist die Lösung!</span>`;
-                isSolved = true;
+            if(currentMode === 'compare') {
+                let op = compA.val < compB.val ? '<' : (compA.val > compB.val ? '>' : '=');
+                checkCompareAnswer(op); // Re-use check logic but force correct
+                document.getElementById('feedbackArea').innerHTML = `<span class="text-yellow-400">Lösung angezeigt.</span>`;
             } else {
-                // Sort Mode Solution
-                // Calculate correct order
                 const sorted = [...sortNumbers].sort((a,b) => sortDirection === 'asc' ? a.val - b.val : b.val - a.val);
-                
-                // Force fill slots visually with correct answer
-                sorted.forEach((item, idx) => {
-                    const slotEl = document.getElementById(`slot${idx}`);
-                    slotEl.innerHTML = `<span class="text-xl md:text-2xl font-bold text-yellow-300 drop-shadow-md">${item.str}</span>`;
-                    slotEl.className = "w-full aspect-square md:aspect-[4/3] bg-yellow-900/30 border-2 border-solid border-yellow-500 rounded-xl flex items-center justify-center";
+                sorted.forEach((n, i) => {
+                    const el = document.getElementById(`slot${i}`);
+                    el.textContent = n.str;
+                    el.className = "w-full aspect-square bg-yellow-900/30 border-2 border-solid border-yellow-500 rounded-xl flex items-center justify-center text-yellow-300 font-bold text-sm md:text-xl";
                 });
-                
-                // Clear pool
+                slotsContent = sorted;
                 document.getElementById('sortPool').innerHTML = '';
-                // Disable interaction
-                slotsContent = sorted; // just to lock logic sort of
                 isSolved = true;
-                document.getElementById('feedbackArea').innerHTML = `<span class="text-yellow-400">Das ist die richtige Reihenfolge!</span>`;
+                document.getElementById('feedbackArea').innerHTML = `<span class="text-yellow-400">Richtige Reihenfolge.</span>`;
             }
         }
 
+        // Init
+        generateTask();
     </script>
 </body>
 </html>
